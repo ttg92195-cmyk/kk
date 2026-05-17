@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'config/theme.dart';
@@ -11,21 +12,30 @@ import 'providers/app_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Global error handler to prevent crashes
+
+  // Catch all Flutter framework errors
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.presentError(details);
-    debugPrint('Flutter Error: ${details.exceptionAsString()}');
+    debugPrint('=== Flutter Error ===');
+    debugPrint(details.exceptionAsString());
+    debugPrint(details.stack.toString());
   };
-  
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AppProvider()),
-      ],
-      child: const KumastreamApp(),
-    ),
-  );
+
+  // Catch all async errors
+  runZonedGuarded< void>(() {
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AppProvider()),
+        ],
+        child: const KumastreamApp(),
+      ),
+    );
+  }, (error, stackTrace) {
+    debugPrint('=== Async Error ===');
+    debugPrint(error.toString());
+    debugPrint(stackTrace.toString());
+  });
 }
 
 class KumastreamApp extends StatelessWidget {
@@ -37,6 +47,37 @@ class KumastreamApp extends StatelessWidget {
       title: 'Kumastream',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
+      builder: (context, widget) {
+        // Wrap entire app in error boundary
+        ErrorWidget.builder = (FlutterErrorDetails details) {
+          return Material(
+            color: AppColors.scaffoldBackground,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.error_outline, color: AppColors.primary, size: 48),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Something went wrong',
+                    style: TextStyle(color: AppColors.textPrimary, fontSize: 18),
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Text(
+                      details.exceptionAsString(),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        };
+        return widget ?? const SizedBox.shrink();
+      },
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),

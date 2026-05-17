@@ -3,7 +3,7 @@ description: Kumastream - Movie Streaming App
 
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.2.0+2
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -13,10 +13,7 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   carousel_slider: ^5.1.2
-  cached_network_image: ^3.4.1
   provider: ^6.1.2
-  shimmer: ^3.0.0
-  readmore: ^3.0.0
 
 dev_dependencies:
   flutter_test:

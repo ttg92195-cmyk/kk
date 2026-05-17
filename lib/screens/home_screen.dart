@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../config/theme.dart';
 import '../models/movie_model.dart';
@@ -26,7 +25,6 @@ class HomeScreen extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                 child: Row(
                   children: [
-                    // Logo
                     const Icon(
                       Icons.movie_filter_rounded,
                       color: AppColors.primary,
@@ -43,7 +41,6 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    // Cartoon girl avatar placeholder
                     CircleAvatar(
                       radius: 20,
                       backgroundColor: AppColors.surface,
@@ -198,8 +195,12 @@ class _BannerCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
         image: DecorationImage(
-          image: CachedNetworkImageProvider(banner.imageUrl),
+          image: NetworkImage(banner.imageUrl),
           fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => Container(
+            color: AppColors.surface,
+            child: const Icon(Icons.movie, color: AppColors.textSecondary, size: 48),
+          ),
         ),
       ),
       child: Container(
@@ -291,9 +292,7 @@ class _CategorySection extends StatelessWidget {
                   ),
                   const Spacer(),
                   TextButton(
-                    onPressed: () {
-                      // TODO: Navigate to see-all screen
-                    },
+                    onPressed: () {},
                     child: const Text('See all'),
                   ),
                 ],
@@ -351,17 +350,32 @@ class _MovieCard extends StatelessWidget {
                     width: double.infinity,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      image: DecorationImage(
-                        image: CachedNetworkImageProvider(movie.posterUrl),
+                      color: AppColors.surface,
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        movie.posterUrl,
                         fit: BoxFit.cover,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
+                        errorBuilder: (_, __, ___) => Container(
+                          color: AppColors.surface,
+                          child: const Center(
+                            child: Icon(Icons.movie, color: AppColors.textSecondary, size: 32),
+                          ),
                         ),
-                      ],
+                        loadingBuilder: (_, child, progress) {
+                          if (progress == null) return child;
+                          return Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.primary,
+                              value: progress.expectedTotalBytes != null
+                                  ? progress.cumulativeBytesLoaded / progress.expectedTotalBytes!
+                                  : null,
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                   // Year badge (top-left)
@@ -369,11 +383,9 @@ class _MovieCard extends StatelessWidget {
                     top: 6,
                     left: 6,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 5, vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                       decoration: BoxDecoration(
-                        color: AppColors.scaffoldBackground
-                            .withOpacity(0.8),
+                        color: AppColors.scaffoldBackground.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -391,21 +403,15 @@ class _MovieCard extends StatelessWidget {
                     top: 6,
                     right: 6,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 5, vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                       decoration: BoxDecoration(
-                        color: AppColors.scaffoldBackground
-                            .withOpacity(0.8),
+                        color: AppColors.scaffoldBackground.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(
-                            Icons.star,
-                            color: AppColors.primary,
-                            size: 10,
-                          ),
+                          const Icon(Icons.star, color: AppColors.primary, size: 10),
                           const SizedBox(width: 2),
                           Text(
                             movie.formattedRating,

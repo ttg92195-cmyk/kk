@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
 import '../config/theme.dart';
 
-/// Splash screen with fade-in logo animation and shimmer loading indicator.
+/// Splash screen with fade-in logo animation and loading indicator.
 /// Automatically navigates to /home after 2 seconds.
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -88,17 +87,13 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
               const SizedBox(height: 48),
-              // Shimmer loading indicator
-              Shimmer.fromColors(
-                baseColor: AppColors.shimmerBase,
-                highlightColor: AppColors.shimmerHighlight,
-                child: Container(
-                  width: 120,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+              // Simple loading indicator
+              SizedBox(
+                width: 120,
+                child: LinearProgressIndicator(
+                  backgroundColor: AppColors.surface,
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ],

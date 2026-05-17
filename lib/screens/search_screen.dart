@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../config/theme.dart';
 import '../models/movie_model.dart';
@@ -50,19 +49,14 @@ class _SearchScreenState extends State<SearchScreen> {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             child: TextField(
               controller: _searchController,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 14,
-              ),
+              style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'Search something...',
                 hintStyle: const TextStyle(color: AppColors.textSecondary),
                 prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.arrow_forward, color: AppColors.primary),
-                  onPressed: () {
-                    _onSearchChanged();
-                  },
+                  onPressed: () => _onSearchChanged(),
                 ),
                 filled: true,
                 fillColor: AppColors.surface,
@@ -76,11 +70,9 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                      color: AppColors.primary, width: 1.5),
+                  borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 12),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
               textInputAction: TextInputAction.search,
               onSubmitted: (_) => _onSearchChanged(),
@@ -90,19 +82,12 @@ class _SearchScreenState extends State<SearchScreen> {
           // Results area
           Expanded(
             child: !hasQuery
-                ? _buildEmptyState(
-                    icon: Icons.search,
-                    text: 'Search for movies...',
-                  )
+                ? _buildEmptyState(icon: Icons.search, text: 'Search for movies...')
                 : results.isEmpty
-                    ? _buildEmptyState(
-                        icon: Icons.movie_filter_outlined,
-                        text: 'Empty data...',
-                      )
+                    ? _buildEmptyState(icon: Icons.movie_filter_outlined, text: 'Empty data...')
                     : GridView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                           childAspectRatio: 0.55,
                           crossAxisSpacing: 12,
@@ -169,10 +154,10 @@ class _SearchMovieCard extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  CachedNetworkImage(
-                    imageUrl: movie.posterUrl,
+                  Image.network(
+                    movie.posterUrl,
                     fit: BoxFit.cover,
-                    errorWidget: (_, __, ___) => Container(
+                    errorBuilder: (_, __, ___) => Container(
                       color: AppColors.surface,
                       child: const Icon(Icons.movie, color: AppColors.textSecondary),
                     ),
@@ -182,8 +167,7 @@ class _SearchMovieCard extends StatelessWidget {
                     top: 6,
                     left: 6,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: AppColors.scaffoldBackground.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(4),
@@ -203,8 +187,7 @@ class _SearchMovieCard extends StatelessWidget {
                     top: 6,
                     right: 6,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: AppColors.scaffoldBackground.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(4),
@@ -212,8 +195,7 @@ class _SearchMovieCard extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.star,
-                              color: AppColors.primary, size: 11),
+                          const Icon(Icons.star, color: AppColors.primary, size: 11),
                           const SizedBox(width: 2),
                           Text(
                             movie.formattedRating,
