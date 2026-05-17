@@ -1,7 +1,7 @@
 name: kumastream
 description: A movie streaming app with dark theme and yellow accent.
 publish_to: 'none'
-version: 1.3.0+3
+version: 1.4.0+4
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -10,7 +10,6 @@ dependencies:
   flutter:
     sdk: flutter
   provider: ^6.1.1
-  carousel_slider: ^5.0.0
   cupertino_icons: ^1.0.6
 
 dev_dependencies:

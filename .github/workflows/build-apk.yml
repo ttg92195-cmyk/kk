@@ -47,19 +47,23 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: success() && github.ref == 'refs/heads/main'
         with:
-          tag_name: v1.3.0-${{ github.run_number }}
-          name: Kumastream v1.3.0 Build #${{ github.run_number }}
+          tag_name: v1.4.0-${{ github.run_number }}
+          name: Kumastream v1.4.0 Build #${{ github.run_number }}
           files: build/app/outputs/flutter-apk/app-release.apk
           body: |
-            Kumastream Movie Streaming App v1.3.0
+            Kumastream Movie Streaming App v1.4.0
 
-            ## What's New
-            - Complete app redesign with Navigation Drawer menu
-            - Movies & Series tabs with 3-column grid
-            - Bookmark, Recent, Downloads, Genres pages
-            - Account page with Premium status
-            - Admin Panel & TMDB Generator (admin only)
-            - Login/Register with admin support
+            ## What's New in v1.4.0
+            - Professional dark theme (Netflix-style)
+            - 4 bottom nav bars (Home/Movies/Series/Profile)
+            - Home with 10 horizontal sections (K Drama, Trending, 4K, Animation, Anime, Bollywood)
+            - Smart search with auto-suggest
+            - Movies/Series with Menu + Search
+            - Redesigned Genres (Movies/Series split)
+            - Redesigned Downloads (Movies/Series tabs, modal settings)
+            - Admin Panel with Post Edit (Is Trending, Tags)
+            - Pull-to-refresh, no splash highlight
+            - Custom collections support
 
             ## Download
             Download the APK file below and install on your Android device.

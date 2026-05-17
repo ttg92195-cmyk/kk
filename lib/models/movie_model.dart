@@ -10,6 +10,8 @@ class Movie {
   final String description;
   final String quality;
   final String type;
+  final bool isTrending;
+  final List<String> tags;
 
   Duration? watchProgress;
   Duration? totalDuration;
@@ -26,6 +28,8 @@ class Movie {
     required this.description,
     this.quality = 'WEB-DL',
     this.type = 'Movie',
+    this.isTrending = false,
+    this.tags = const [],
     this.watchProgress,
     this.totalDuration,
   });
@@ -47,6 +51,8 @@ class Movie {
     return watchProgress!.inSeconds / totalDuration!.inSeconds;
   }
 
+  bool hasTag(String tag) => tags.contains(tag);
+
   Movie copyWith({
     String? id,
     String? title,
@@ -59,6 +65,8 @@ class Movie {
     String? description,
     String? quality,
     String? type,
+    bool? isTrending,
+    List<String>? tags,
     Duration? watchProgress,
     Duration? totalDuration,
   }) {
@@ -74,6 +82,8 @@ class Movie {
       description: description ?? this.description,
       quality: quality ?? this.quality,
       type: type ?? this.type,
+      isTrending: isTrending ?? this.isTrending,
+      tags: tags ?? this.tags,
       watchProgress: watchProgress ?? this.watchProgress,
       totalDuration: totalDuration ?? this.totalDuration,
     );

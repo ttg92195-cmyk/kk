@@ -181,7 +181,7 @@ class ProfileScreen extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        subtitle: Text(subtitle, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+        subtitle: Text(subtitle, style: TextStyle(color: AppTheme.subtitleColor, fontSize: 12)),
         trailing: const Icon(Icons.chevron_right, color: Colors.grey),
         onTap: onTap,
       ),

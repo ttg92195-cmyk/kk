@@ -28,12 +28,11 @@ class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const MoviesScreen(),
-    const SeriesScreen(),
-    const SearchScreen(),
-    const ProfileScreen(),
+  final List<Widget> _screens = const [
+    HomeScreen(),
+    MoviesScreen(),
+    SeriesScreen(),
+    ProfileScreen(),
   ];
 
   void _navigateFromDrawer(String title) {
@@ -92,6 +91,8 @@ class _MainNavigationState extends State<MainNavigation> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -104,10 +105,6 @@ class _MainNavigationState extends State<MainNavigation> {
           BottomNavigationBarItem(
             icon: Icon(Icons.tv),
             label: 'Series',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
@@ -159,9 +156,9 @@ class _MainNavigationState extends State<MainNavigation> {
                   Text(
                     provider.isLoggedIn
                         ? 'Welcome, ${provider.currentUser}'
-                        : 'Not logged in',
+                        : 'Welcome to Kumastream',
                     style: const TextStyle(
-                      color: Colors.grey,
+                      color: AppTheme.subtitleColor,
                       fontSize: 13,
                     ),
                   ),
@@ -175,14 +172,14 @@ class _MainNavigationState extends State<MainNavigation> {
             _drawerItem(Icons.history, 'Recent'),
             _drawerItem(Icons.download, 'Downloads'),
             _drawerItem(Icons.category, 'Genres'),
-            const Divider(color: Colors.white24, height: 1),
+            const SizedBox(height: 8),
             _drawerItem(Icons.settings, 'Settings'),
             if (provider.isLoggedIn)
               _drawerItem(Icons.person, 'Account')
             else
               _drawerItem(Icons.login, 'Login'),
             if (provider.isAdmin) ...[
-              const Divider(color: Colors.white24, height: 1),
+              const SizedBox(height: 8),
               _drawerItem(Icons.admin_panel_settings, 'Admin Panel'),
               _drawerItem(Icons.api, 'TMDB Generator'),
             ],
@@ -194,10 +191,10 @@ class _MainNavigationState extends State<MainNavigation> {
 
   Widget _drawerItem(IconData icon, String title) {
     return ListTile(
-      leading: Icon(icon, color: Colors.white70, size: 22),
+      leading: Icon(icon, color: AppTheme.subtitleColor, size: 22),
       title: Text(
         title,
-        style: const TextStyle(color: Colors.white, fontSize: 15),
+        style: const TextStyle(color: AppTheme.textColor, fontSize: 15),
       ),
       onTap: () => _navigateFromDrawer(title),
       dense: true,

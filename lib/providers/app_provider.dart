@@ -15,7 +15,6 @@ class AppProvider extends ChangeNotifier {
   String get currentUser => _currentUser;
   String get phoneModel => _phoneModel;
 
-  // Admin credentials
   static const String _adminUsername = 'Chitminzaw';
   static const String _adminPassword = 'Chitmin7';
 
@@ -30,6 +29,17 @@ class AppProvider extends ChangeNotifier {
   // Downloads
   final List<DownloadItem> _downloads = [];
   List<DownloadItem> get downloads => _downloads;
+  List<DownloadItem> get movieDownloads => _downloads.where((d) => d.movie.type == 'Movie').toList();
+  List<DownloadItem> get seriesDownloads => _downloads.where((d) => d.movie.type == 'Series').toList();
+
+  // Download settings
+  String _downloadPath = '/kmm';
+  String get downloadPath => _downloadPath;
+
+  void setDownloadPath(String path) {
+    _downloadPath = path;
+    notifyListeners();
+  }
 
   // Search
   String _searchQuery = '';
@@ -37,6 +47,42 @@ class AppProvider extends ChangeNotifier {
 
   // Registered users
   final Map<String, String> _registeredUsers = {};
+
+  // Movie editing (admin)
+  final List<Movie> _editableMovies = [];
+  List<Movie> get editableMovies => _editableMovies;
+
+  void addEditableMovie(Movie movie) {
+    if (!_editableMovies.any((m) => m.id == movie.id)) {
+      _editableMovies.add(movie);
+      notifyListeners();
+    }
+  }
+
+  void updateMovieField(String movieId, {bool? isTrending, List<String>? tags}) {
+    final index = _editableMovies.indexWhere((m) => m.id == movieId);
+    if (index >= 0) {
+      _editableMovies[index] = _editableMovies[index].copyWith(
+        isTrending: isTrending ?? _editableMovies[index].isTrending,
+        tags: tags ?? _editableMovies[index].tags,
+      );
+      notifyListeners();
+    }
+  }
+
+  // Custom collections
+  final List<Map<String, dynamic>> _customCollections = [];
+  List<Map<String, dynamic>> get customCollections => _customCollections;
+
+  void addCollection(String name, String posterUrl, int count) {
+    _customCollections.add({'name': name, 'posterUrl': posterUrl, 'count': count});
+    notifyListeners();
+  }
+
+  void removeCollection(String name) {
+    _customCollections.removeWhere((c) => c['name'] == name);
+    notifyListeners();
+  }
 
   void login(String username, String password) {
     if (username == _adminUsername && password == _adminPassword) {
@@ -85,9 +131,7 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool isBookmarked(String movieId) {
-    return _bookmarks.any((m) => m.id == movieId);
-  }
+  bool isBookmarked(String movieId) => _bookmarks.any((m) => m.id == movieId);
 
   void removeBookmark(String movieId) {
     _bookmarks.removeWhere((m) => m.id == movieId);
@@ -127,6 +171,8 @@ class AppProvider extends ChangeNotifier {
         movie: movie,
         progress: 0.0,
         status: DownloadStatus.downloading,
+        fileSize: '${(movie.imdbRating * 120).round()} MB',
+        speed: '0 MB/s',
       ));
       notifyListeners();
       _simulateDownload(movie.id);
@@ -137,20 +183,18 @@ class AppProvider extends ChangeNotifier {
     double progress = 0.0;
     Timer.periodic(const Duration(milliseconds: 500), (timer) {
       final index = _downloads.indexWhere((d) => d.movie.id == movieId);
-      if (index < 0) {
-        timer.cancel();
-        return;
-      }
+      if (index < 0) { timer.cancel(); return; }
+      if (_downloads[index].status == DownloadStatus.paused) return;
       progress += 0.05;
       if (progress >= 1.0) {
         _downloads[index] = _downloads[index].copyWith(
-          progress: 1.0,
-          status: DownloadStatus.completed,
+          progress: 1.0, status: DownloadStatus.completed, speed: '',
         );
         notifyListeners();
         timer.cancel();
       } else {
-        _downloads[index] = _downloads[index].copyWith(progress: progress);
+        final speed = '${(2.1 + (progress * 3)).toStringAsFixed(1)} MB/s';
+        _downloads[index] = _downloads[index].copyWith(progress: progress, speed: speed);
         notifyListeners();
       }
     });
@@ -159,7 +203,7 @@ class AppProvider extends ChangeNotifier {
   void pauseDownload(String movieId) {
     final index = _downloads.indexWhere((d) => d.movie.id == movieId);
     if (index >= 0) {
-      _downloads[index] = _downloads[index].copyWith(status: DownloadStatus.paused);
+      _downloads[index] = _downloads[index].copyWith(status: DownloadStatus.paused, speed: '');
       notifyListeners();
     }
   }
@@ -167,7 +211,7 @@ class AppProvider extends ChangeNotifier {
   void resumeDownload(String movieId) {
     final index = _downloads.indexWhere((d) => d.movie.id == movieId);
     if (index >= 0) {
-      _downloads[index] = _downloads[index].copyWith(status: DownloadStatus.downloading);
+      _downloads[index] = _downloads[index].copyWith(status: DownloadStatus.downloading, speed: 'Resuming...');
       notifyListeners();
     }
   }
@@ -180,7 +224,7 @@ class AppProvider extends ChangeNotifier {
   void pauseAllDownloads() {
     for (int i = 0; i < _downloads.length; i++) {
       if (_downloads[i].status == DownloadStatus.downloading) {
-        _downloads[i] = _downloads[i].copyWith(status: DownloadStatus.paused);
+        _downloads[i] = _downloads[i].copyWith(status: DownloadStatus.paused, speed: '');
       }
     }
     notifyListeners();
@@ -189,7 +233,7 @@ class AppProvider extends ChangeNotifier {
   void resumeAllDownloads() {
     for (int i = 0; i < _downloads.length; i++) {
       if (_downloads[i].status == DownloadStatus.paused) {
-        _downloads[i] = _downloads[i].copyWith(status: DownloadStatus.downloading);
+        _downloads[i] = _downloads[i].copyWith(status: DownloadStatus.downloading, speed: 'Resuming...');
       }
     }
     notifyListeners();
@@ -202,7 +246,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   List<Movie> searchMovies(String query) {
-    if (query.isEmpty) return SampleData.movies;
+    if (query.isEmpty) return [];
     return SampleData.all.where((movie) {
       return movie.title.toLowerCase().contains(query.toLowerCase()) ||
           movie.genre.toLowerCase().contains(query.toLowerCase());
@@ -224,30 +268,60 @@ class AppProvider extends ChangeNotifier {
       m.genre.toLowerCase().contains(_searchQuery.toLowerCase())
     ).toList();
   }
+
+  // Filter by genre
+  List<Movie> getMoviesByGenre(String genre) {
+    return SampleData.movies.where((m) => m.genre.contains(genre)).toList();
+  }
+
+  List<Movie> getSeriesByGenre(String genre) {
+    return SampleData.series.where((m) => m.genre.contains(genre)).toList();
+  }
+
+  // Filter by tag
+  List<Movie> getByTag(String tag) {
+    return SampleData.all.where((m) => m.hasTag(tag)).toList();
+  }
+
+  List<Movie> getMoviesByTag(String tag) {
+    return SampleData.movies.where((m) => m.hasTag(tag)).toList();
+  }
+
+  List<Movie> getSeriesByTag(String tag) {
+    return SampleData.series.where((m) => m.hasTag(tag)).toList();
+  }
 }
 
-enum DownloadStatus { downloading, paused, completed }
+enum DownloadStatus { downloading, paused, completed, failed }
 
 class DownloadItem {
   final Movie movie;
   final double progress;
   final DownloadStatus status;
+  final String fileSize;
+  final String speed;
 
   DownloadItem({
     required this.movie,
     required this.progress,
     required this.status,
+    this.fileSize = '',
+    this.speed = '',
   });
 
   DownloadItem copyWith({
     Movie? movie,
     double? progress,
     DownloadStatus? status,
+    String? fileSize,
+    String? speed,
   }) {
     return DownloadItem(
       movie: movie ?? this.movie,
       progress: progress ?? this.progress,
       status: status ?? this.status,
+      fileSize: fileSize ?? this.fileSize,
+      speed: speed ?? this.speed,
     );
   }
 }
