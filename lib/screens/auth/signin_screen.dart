@@ -52,7 +52,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.15),
+                      color: AppColors.primary.withOpacity(0.15),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(

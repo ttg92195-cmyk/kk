@@ -164,7 +164,7 @@ class _BannerCarouselState extends State<_BannerCarousel> {
               decoration: BoxDecoration(
                 color: _current == index
                     ? AppColors.primary
-                    : AppColors.textSecondary.withValues(alpha: 0.4),
+                    : AppColors.textSecondary.withOpacity(0.4),
                 borderRadius: BorderRadius.circular(3),
               ),
             );
@@ -210,8 +210,8 @@ class _BannerCard extends StatelessWidget {
             end: Alignment.bottomCenter,
             colors: [
               Colors.transparent,
-              AppColors.scaffoldBackground.withValues(alpha: 0.3),
-              AppColors.scaffoldBackground.withValues(alpha: 0.9),
+              AppColors.scaffoldBackground.withOpacity(0.3),
+              AppColors.scaffoldBackground.withOpacity(0.9),
             ],
           ),
         ),
@@ -357,7 +357,7 @@ class _MovieCard extends StatelessWidget {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.3),
+                          color: Colors.black.withOpacity(0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
@@ -373,7 +373,7 @@ class _MovieCard extends StatelessWidget {
                           horizontal: 5, vertical: 2),
                       decoration: BoxDecoration(
                         color: AppColors.scaffoldBackground
-                            .withValues(alpha: 0.8),
+                            .withOpacity(0.8),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -395,7 +395,7 @@ class _MovieCard extends StatelessWidget {
                           horizontal: 5, vertical: 2),
                       decoration: BoxDecoration(
                         color: AppColors.scaffoldBackground
-                            .withValues(alpha: 0.8),
+                            .withOpacity(0.8),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Row(

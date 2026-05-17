@@ -42,7 +42,7 @@ class MovieDetailScreen extends StatelessWidget {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          AppColors.scaffoldBackground.withValues(alpha: 0.6),
+                          AppColors.scaffoldBackground.withOpacity(0.6),
                           AppColors.scaffoldBackground,
                         ],
                         stops: const [0.3, 0.7, 1.0],
@@ -56,7 +56,7 @@ class MovieDetailScreen extends StatelessWidget {
                     child: SafeArea(
                       child: CircleAvatar(
                         backgroundColor:
-                            AppColors.scaffoldBackground.withValues(alpha: 0.6),
+                            AppColors.scaffoldBackground.withOpacity(0.6),
                         child: IconButton(
                           icon: const Icon(Icons.arrow_back,
                               color: AppColors.textPrimary, size: 20),
@@ -84,7 +84,7 @@ class MovieDetailScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.5),
+                          color: Colors.black.withOpacity(0.5),
                           blurRadius: 16,
                           offset: const Offset(0, 8),
                         ),

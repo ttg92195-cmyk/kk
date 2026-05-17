@@ -10,6 +10,14 @@ import 'screens/auth/signup_screen.dart';
 import 'providers/app_provider.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Global error handler to prevent crashes
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    debugPrint('Flutter Error: ${details.exceptionAsString()}');
+  };
+  
   runApp(
     MultiProvider(
       providers: [
