@@ -10,13 +10,14 @@ import 'screens/auth/signup_screen.dart';
 import 'providers/app_provider.dart';
 
 void main() {
-  // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Catch errors to prevent app crash
-  FlutterError.onError = (FlutterErrorDetails details) {
+  // Global error handler to prevent crashes
+  FlutterError.onError = (details) {
     FlutterError.presentError(details);
-    debugPrint('Flutter Error: ${details.exceptionAsString()}');
+    debugPrint('=== Flutter Error ===');
+    debugPrint(details.exceptionAsString());
+    debugPrint(details.stack.toString());
   };
 
   runApp(
@@ -38,6 +39,21 @@ class KumastreamApp extends StatelessWidget {
       title: 'Kumastream',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
+      builder: (context, widget) {
+        // Global error boundary
+        ErrorWidget.builder = (FlutterErrorDetails details) {
+          return Material(
+            color: AppColors.scaffoldBackground,
+            child: Center(
+              child: Text(
+                'Something went wrong',
+                style: TextStyle(color: AppColors.textSecondary),
+              ),
+            ),
+          );
+        };
+        return widget ?? const SizedBox.shrink();
+      },
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),

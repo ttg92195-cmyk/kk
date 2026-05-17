@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../config/theme.dart';
 import '../models/live_model.dart';
 import '../providers/app_provider.dart';
 
 /// Live page with 3 tabs: Live, Highlight, Channels.
+/// All images use safe placeholder containers.
 class LiveScreen extends StatelessWidget {
   const LiveScreen({super.key});
 
@@ -22,14 +22,8 @@ class LiveScreen extends StatelessWidget {
             indicatorWeight: 3,
             labelColor: AppColors.primary,
             unselectedLabelColor: AppColors.textSecondary,
-            labelStyle: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-            ),
-            unselectedLabelStyle: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
+            labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+            unselectedLabelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             tabs: const [
               Tab(text: 'Live'),
               Tab(text: 'Highlight'),
@@ -84,41 +78,30 @@ class _LiveEventCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Thumbnail
+          // Thumbnail - safe placeholder
           ClipRRect(
-            borderRadius: const BorderRadius.horizontal(
-              left: Radius.circular(12),
-            ),
+            borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
             child: SizedBox(
               width: 130,
               height: 90,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  CachedNetworkImage(
-                    imageUrl: event.thumbnailUrl,
-                    fit: BoxFit.cover,
-                    errorWidget: (_, __, ___) => Container(
-                      color: AppColors.surface,
-                      child: const Icon(Icons.live_tv,
-                          color: AppColors.textSecondary),
-                    ),
+                  Container(
+                    color: AppColors.surface,
+                    child: const Icon(Icons.live_tv, color: AppColors.textSecondary, size: 28),
                   ),
                   if (event.isLive)
                     Positioned(
                       top: 6,
                       left: 6,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: AppColors.liveRed,
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: const Text(
-                          'LIVE',
-                          style: AppTheme.liveBadge,
-                        ),
+                        child: const Text('LIVE', style: AppTheme.liveBadge),
                       ),
                     ),
                 ],
@@ -156,10 +139,7 @@ class _LiveEventCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     event.time,
-                    style: const TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 12,
-                    ),
+                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
                   ),
                 ],
               ),
@@ -217,14 +197,7 @@ class _HighlightCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        image: DecorationImage(
-          image: CachedNetworkImageProvider(event.thumbnailUrl),
-          fit: BoxFit.cover,
-          colorFilter: ColorFilter.mode(
-            Colors.black.withOpacity(0.3),
-            BlendMode.darken,
-          ),
-        ),
+        color: AppColors.surface,
       ),
       child: Center(
         child: Column(
@@ -244,15 +217,18 @@ class _HighlightCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              event.title,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                event.title,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],
@@ -303,18 +279,12 @@ class _ChannelCard extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Channel logo
           CircleAvatar(
             radius: 28,
             backgroundColor: AppColors.surface,
-            backgroundImage: CachedNetworkImageProvider(channel.logoUrl),
-            onBackgroundImageError: (_, __) {},
-            child: channel.logoUrl.isEmpty
-                ? const Icon(Icons.tv, color: AppColors.textSecondary, size: 24)
-                : null,
+            child: const Icon(Icons.tv, color: AppColors.textSecondary, size: 24),
           ),
           const SizedBox(height: 8),
-          // Channel name
           Text(
             channel.name,
             textAlign: TextAlign.center,
@@ -327,7 +297,6 @@ class _ChannelCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          // Play button
           Container(
             width: 32,
             height: 32,
@@ -335,11 +304,7 @@ class _ChannelCard extends StatelessWidget {
               color: AppColors.primary.withOpacity(0.15),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
-              Icons.play_arrow_rounded,
-              color: AppColors.primary,
-              size: 20,
-            ),
+            child: const Icon(Icons.play_arrow_rounded, color: AppColors.primary, size: 20),
           ),
         ],
       ),

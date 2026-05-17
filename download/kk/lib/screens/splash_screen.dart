@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
 import '../config/theme.dart';
 
-/// Splash screen with fade-in logo animation and shimmer loading indicator.
+/// Splash screen with fade-in logo animation.
+/// Simplified - no shimmer, no network dependencies.
 /// Automatically navigates to /home after 2 seconds.
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -30,9 +30,13 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _navigateToHome() async {
-    await Future.delayed(const Duration(seconds: 2));
-    if (!mounted) return;
-    Navigator.pushReplacementNamed(context, '/home');
+    try {
+      await Future.delayed(const Duration(seconds: 2));
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, '/home');
+    } catch (e) {
+      debugPrint('Navigation error: $e');
+    }
   }
 
   @override
@@ -87,18 +91,25 @@ class _SplashScreenState extends State<SplashScreen>
                   letterSpacing: 0.5,
                 ),
               ),
+              const SizedBox(height: 6),
+              // Version indicator - so user can confirm it's the new build
+              const Text(
+                'v1.1.0',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
               const SizedBox(height: 48),
-              // Shimmer loading indicator
-              Shimmer.fromColors(
-                baseColor: AppColors.shimmerBase,
-                highlightColor: AppColors.shimmerHighlight,
-                child: Container(
-                  width: 120,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+              // Simple loading indicator (no shimmer dependency)
+              SizedBox(
+                width: 120,
+                child: LinearProgressIndicator(
+                  backgroundColor: AppColors.surface,
+                  color: AppColors.primary,
+                  minHeight: 3,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ],

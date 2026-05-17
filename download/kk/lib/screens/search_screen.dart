@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../config/theme.dart';
 import '../models/movie_model.dart';
 import '../providers/app_provider.dart';
 
 /// Search page with TextField and grid of search results.
+/// All images use safe placeholder containers.
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
 
@@ -23,7 +23,11 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void _onSearchChanged() {
-    context.read<AppProvider>().searchMovies(_searchController.text);
+    try {
+      context.read<AppProvider>().searchMovies(_searchController.text);
+    } catch (e) {
+      debugPrint('Search error: $e');
+    }
   }
 
   @override
@@ -40,9 +44,7 @@ class _SearchScreenState extends State<SearchScreen> {
     final hasQuery = _searchController.text.trim().isNotEmpty;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Search'),
-      ),
+      appBar: AppBar(title: const Text('Search')),
       body: Column(
         children: [
           // Search field
@@ -50,19 +52,14 @@ class _SearchScreenState extends State<SearchScreen> {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             child: TextField(
               controller: _searchController,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 14,
-              ),
+              style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'Search something...',
                 hintStyle: const TextStyle(color: AppColors.textSecondary),
                 prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.arrow_forward, color: AppColors.primary),
-                  onPressed: () {
-                    _onSearchChanged();
-                  },
+                  onPressed: _onSearchChanged,
                 ),
                 filled: true,
                 fillColor: AppColors.surface,
@@ -76,11 +73,9 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                      color: AppColors.primary, width: 1.5),
+                  borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 12),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
               textInputAction: TextInputAction.search,
               onSubmitted: (_) => _onSearchChanged(),
@@ -90,19 +85,12 @@ class _SearchScreenState extends State<SearchScreen> {
           // Results area
           Expanded(
             child: !hasQuery
-                ? _buildEmptyState(
-                    icon: Icons.search,
-                    text: 'Search for movies...',
-                  )
+                ? _buildEmptyState(icon: Icons.search, text: 'Search for movies...')
                 : results.isEmpty
-                    ? _buildEmptyState(
-                        icon: Icons.movie_filter_outlined,
-                        text: 'Empty data...',
-                      )
+                    ? _buildEmptyState(icon: Icons.movie_filter_outlined, text: 'Empty data...')
                     : GridView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                           childAspectRatio: 0.55,
                           crossAxisSpacing: 12,
@@ -141,12 +129,26 @@ class _SearchScreenState extends State<SearchScreen> {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-//  SEARCH MOVIE CARD
+//  SEARCH MOVIE CARD - Safe colored placeholders
 // ═══════════════════════════════════════════════════════════════════════════════
 
 class _SearchMovieCard extends StatelessWidget {
   final Movie movie;
   const _SearchMovieCard({required this.movie});
+
+  Color get _posterColor {
+    final colors = [
+      const Color(0xFF1A237E),
+      const Color(0xFF4A148C),
+      const Color(0xFFB71C1C),
+      const Color(0xFF0D47A1),
+      const Color(0xFF004D40),
+      const Color(0xFFE65100),
+      const Color(0xFF33691E),
+      const Color(0xFF880E4F),
+    ];
+    return colors[movie.id % colors.length];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -163,18 +165,16 @@ class _SearchMovieCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Poster
+            // Poster - safe colored placeholder
             Expanded(
               flex: 3,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  CachedNetworkImage(
-                    imageUrl: movie.posterUrl,
-                    fit: BoxFit.cover,
-                    errorWidget: (_, __, ___) => Container(
-                      color: AppColors.surface,
-                      child: const Icon(Icons.movie, color: AppColors.textSecondary),
+                  Container(
+                    color: _posterColor,
+                    child: const Center(
+                      child: Icon(Icons.movie, color: Colors.white54, size: 36),
                     ),
                   ),
                   // Year badge
@@ -182,8 +182,7 @@ class _SearchMovieCard extends StatelessWidget {
                     top: 6,
                     left: 6,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: AppColors.scaffoldBackground.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(4),
@@ -203,8 +202,7 @@ class _SearchMovieCard extends StatelessWidget {
                     top: 6,
                     right: 6,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: AppColors.scaffoldBackground.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(4),
@@ -212,8 +210,7 @@ class _SearchMovieCard extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.star,
-                              color: AppColors.primary, size: 11),
+                          const Icon(Icons.star, color: AppColors.primary, size: 11),
                           const SizedBox(width: 2),
                           Text(
                             movie.formattedRating,
@@ -254,10 +251,7 @@ class _SearchMovieCard extends StatelessWidget {
                       movie.genresDisplay,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
-                        fontSize: 10,
-                      ),
+                      style: const TextStyle(color: AppColors.textSecondary, fontSize: 10),
                     ),
                   ],
                 ),

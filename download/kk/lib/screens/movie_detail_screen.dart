@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:readmore/readmore.dart';
 import '../config/theme.dart';
 import '../models/movie_model.dart';
 
 /// Movie detail page showing full info about a movie.
-/// Expects a [Movie] object passed via ModalRoute arguments.
+/// All images use safe placeholder containers.
 class MovieDetailScreen extends StatelessWidget {
   const MovieDetailScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final Movie movie =
-        ModalRoute.of(context)!.settings.arguments as Movie;
+    final Movie movie;
+    try {
+      movie = ModalRoute.of(context)!.settings.arguments as Movie;
+    } catch (e) {
+      return Scaffold(
+        backgroundColor: AppColors.scaffoldBackground,
+        appBar: AppBar(title: const Text('Movie Detail')),
+        body: const Center(
+          child: Text('Error loading movie', style: TextStyle(color: AppColors.textSecondary)),
+        ),
+      );
+    }
 
     return Scaffold(
       body: CustomScrollView(
@@ -24,14 +33,11 @@ class MovieDetailScreen extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  // Backdrop image
-                  CachedNetworkImage(
-                    imageUrl: movie.backdropUrl,
-                    fit: BoxFit.cover,
-                    errorWidget: (_, __, ___) => Container(
-                      color: AppColors.surface,
-                      child: const Icon(Icons.movie,
-                          color: AppColors.textSecondary, size: 48),
+                  // Backdrop - safe placeholder
+                  Container(
+                    color: AppColors.surface,
+                    child: const Center(
+                      child: Icon(Icons.movie, color: AppColors.textSecondary, size: 64),
                     ),
                   ),
                   // Gradient overlay
@@ -55,11 +61,9 @@ class MovieDetailScreen extends StatelessWidget {
                     left: 8,
                     child: SafeArea(
                       child: CircleAvatar(
-                        backgroundColor:
-                            AppColors.scaffoldBackground.withOpacity(0.6),
+                        backgroundColor: AppColors.scaffoldBackground.withOpacity(0.6),
                         child: IconButton(
-                          icon: const Icon(Icons.arrow_back,
-                              color: AppColors.textPrimary, size: 20),
+                          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary, size: 20),
                           onPressed: () => Navigator.pop(context),
                         ),
                       ),
@@ -76,12 +80,13 @@ class MovieDetailScreen extends StatelessWidget {
               offset: const Offset(0, -60),
               child: Column(
                 children: [
-                  // Poster
+                  // Poster - safe placeholder
                   Container(
                     width: 160,
                     height: 220,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(14),
+                      color: AppColors.surface,
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.5),
@@ -89,10 +94,9 @@ class MovieDetailScreen extends StatelessWidget {
                           offset: const Offset(0, 8),
                         ),
                       ],
-                      image: DecorationImage(
-                        image: CachedNetworkImageProvider(movie.posterUrl),
-                        fit: BoxFit.cover,
-                      ),
+                    ),
+                    child: const Center(
+                      child: Icon(Icons.movie, color: AppColors.textSecondary, size: 48),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -121,24 +125,9 @@ class MovieDetailScreen extends StatelessWidget {
                       spacing: 12,
                       runSpacing: 8,
                       children: [
-                        // IMDb rating
-                        _MetaChip(
-                          icon: Icons.star,
-                          iconColor: AppColors.primary,
-                          label: movie.formattedRating,
-                        ),
-                        // Year
-                        _MetaChip(
-                          icon: Icons.calendar_today,
-                          iconColor: AppColors.textSecondary,
-                          label: movie.yearDisplay,
-                        ),
-                        // Duration
-                        _MetaChip(
-                          icon: Icons.schedule,
-                          iconColor: AppColors.textSecondary,
-                          label: movie.duration,
-                        ),
+                        _MetaChip(icon: Icons.star, iconColor: AppColors.primary, label: movie.formattedRating),
+                        _MetaChip(icon: Icons.calendar_today, iconColor: AppColors.textSecondary, label: movie.yearDisplay),
+                        _MetaChip(icon: Icons.schedule, iconColor: AppColors.textSecondary, label: movie.duration),
                       ],
                     ),
                   ),
@@ -153,21 +142,15 @@ class MovieDetailScreen extends StatelessWidget {
                       runSpacing: 6,
                       children: movie.genres.map((genre) {
                         return Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
                             color: AppColors.surface,
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                                color: AppColors.divider, width: 0.5),
+                            border: Border.all(color: AppColors.divider, width: 0.5),
                           ),
                           child: Text(
                             genre,
-                            style: const TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: const TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w500),
                           ),
                         );
                       }).toList(),
@@ -180,41 +163,30 @@ class MovieDetailScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Row(
                       children: [
-                        // Watch Now
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: () {
-                              // TODO: Start streaming
-                            },
+                            onPressed: () {},
                             icon: const Icon(Icons.play_arrow_rounded, size: 20),
                             label: const Text('Watch Now'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primary,
                               foregroundColor: AppColors.scaffoldBackground,
                               padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                             ),
                           ),
                         ),
                         const SizedBox(width: 12),
-                        // Download
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: () {
-                              // TODO: Download
-                            },
+                            onPressed: () {},
                             icon: const Icon(Icons.download_rounded, size: 20),
                             label: const Text('Download'),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.primary,
-                              side: const BorderSide(
-                                  color: AppColors.primary, width: 1.5),
+                              side: const BorderSide(color: AppColors.primary, width: 1.5),
                               padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                             ),
                           ),
                         ),
@@ -229,14 +201,7 @@ class MovieDetailScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Synopsis',
-                          style: TextStyle(
-                            color: AppColors.textPrimary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                        const Text('Synopsis', style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.w700)),
                         const SizedBox(height: 8),
                         ReadMoreText(
                           movie.synopsis,
@@ -245,11 +210,7 @@ class MovieDetailScreen extends StatelessWidget {
                           trimCollapsedText: ' read more',
                           trimExpandedText: ' read less',
                           colorClickableText: AppColors.primary,
-                          style: const TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 13,
-                            height: 1.6,
-                          ),
+                          style: const TextStyle(color: AppColors.textSecondary, fontSize: 13, height: 1.6),
                         ),
                       ],
                     ),
@@ -260,14 +221,7 @@ class MovieDetailScreen extends StatelessWidget {
                   if (movie.cast.isNotEmpty) ...[
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: const Text(
-                        'Cast',
-                        style: TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+                      child: const Text('Cast', style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.w700)),
                     ),
                     const SizedBox(height: 12),
                     SizedBox(
@@ -278,8 +232,7 @@ class MovieDetailScreen extends StatelessWidget {
                         itemCount: movie.cast.length,
                         separatorBuilder: (_, __) => const SizedBox(width: 16),
                         itemBuilder: (context, index) {
-                          return _CastMemberCard(
-                              member: movie.cast[index]);
+                          return _CastMemberCard(member: movie.cast[index]);
                         },
                       ),
                     ),
@@ -305,11 +258,7 @@ class _MetaChip extends StatelessWidget {
   final Color iconColor;
   final String label;
 
-  const _MetaChip({
-    required this.icon,
-    required this.iconColor,
-    required this.label,
-  });
+  const _MetaChip({required this.icon, required this.iconColor, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -318,14 +267,7 @@ class _MetaChip extends StatelessWidget {
       children: [
         Icon(icon, color: iconColor, size: 16),
         const SizedBox(width: 4),
-        Text(
-          label,
-          style: TextStyle(
-            color: iconColor,
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        Text(label, style: TextStyle(color: iconColor, fontSize: 13, fontWeight: FontWeight.w600)),
       ],
     );
   }
@@ -344,11 +286,7 @@ class _CastMemberCard extends StatelessWidget {
           CircleAvatar(
             radius: 30,
             backgroundColor: AppColors.surface,
-            backgroundImage:
-                CachedNetworkImageProvider(member.profileUrl),
-            onBackgroundImageError: (_, __) {},
-            child: const Icon(Icons.person,
-                color: AppColors.textSecondary, size: 24),
+            child: const Icon(Icons.person, color: AppColors.textSecondary, size: 24),
           ),
           const SizedBox(height: 6),
           Text(
@@ -356,12 +294,7 @@ class _CastMemberCard extends StatelessWidget {
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              height: 1.2,
-            ),
+            style: const TextStyle(color: AppColors.textPrimary, fontSize: 11, fontWeight: FontWeight.w500, height: 1.2),
           ),
         ],
       ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../config/theme.dart';
 import '../models/movie_model.dart';
@@ -8,6 +7,7 @@ import '../providers/app_provider.dart';
 import '../utils/constants.dart';
 
 /// Home page with greeting, banner carousel, and movie category sections.
+/// All images use safe placeholder containers instead of network images.
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -26,7 +26,6 @@ class HomeScreen extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                 child: Row(
                   children: [
-                    // Logo
                     const Icon(
                       Icons.movie_filter_rounded,
                       color: AppColors.primary,
@@ -43,7 +42,6 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    // Cartoon girl avatar placeholder
                     CircleAvatar(
                       radius: 20,
                       backgroundColor: AppColors.surface,
@@ -110,26 +108,10 @@ class _BannerCarouselState extends State<_BannerCarousel> {
   int _current = 0;
 
   static const _banners = [
-    _BannerData(
-      title: 'Premier League',
-      subtitle: 'Man City vs Arsenal',
-      imageUrl: 'https://picsum.photos/seed/banner1/800/400',
-    ),
-    _BannerData(
-      title: 'La Liga',
-      subtitle: 'Barcelona vs Real Madrid',
-      imageUrl: 'https://picsum.photos/seed/banner2/800/400',
-    ),
-    _BannerData(
-      title: 'Champions League',
-      subtitle: 'Bayern vs PSG',
-      imageUrl: 'https://picsum.photos/seed/banner3/800/400',
-    ),
-    _BannerData(
-      title: 'Serie A',
-      subtitle: 'AC Milan vs Inter',
-      imageUrl: 'https://picsum.photos/seed/banner4/800/400',
-    ),
+    _BannerData(title: 'Premier League', subtitle: 'Man City vs Arsenal'),
+    _BannerData(title: 'La Liga', subtitle: 'Barcelona vs Real Madrid'),
+    _BannerData(title: 'Champions League', subtitle: 'Bayern vs PSG'),
+    _BannerData(title: 'Serie A', subtitle: 'AC Milan vs Inter'),
   ];
 
   @override
@@ -178,12 +160,7 @@ class _BannerCarouselState extends State<_BannerCarousel> {
 class _BannerData {
   final String title;
   final String subtitle;
-  final String imageUrl;
-  const _BannerData({
-    required this.title,
-    required this.subtitle,
-    required this.imageUrl,
-  });
+  const _BannerData({required this.title, required this.subtitle});
 }
 
 class _BannerCard extends StatelessWidget {
@@ -197,9 +174,13 @@ class _BannerCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 4),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
-        image: DecorationImage(
-          image: CachedNetworkImageProvider(banner.imageUrl),
-          fit: BoxFit.cover,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.surface,
+            AppColors.cardColor,
+          ],
         ),
       ),
       child: Container(
@@ -263,10 +244,7 @@ class _CategorySection extends StatelessWidget {
   final String title;
   final List<Movie> movies;
 
-  const _CategorySection({
-    required this.title,
-    required this.movies,
-  });
+  const _CategorySection({required this.title, required this.movies});
 
   @override
   Widget build(BuildContext context) {
@@ -291,9 +269,7 @@ class _CategorySection extends StatelessWidget {
                   ),
                   const Spacer(),
                   TextButton(
-                    onPressed: () {
-                      // TODO: Navigate to see-all screen
-                    },
+                    onPressed: () {},
                     child: const Text('See all'),
                   ),
                 ],
@@ -321,12 +297,27 @@ class _CategorySection extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-//  MOVIE CARD
+//  MOVIE CARD - Uses safe colored placeholders instead of network images
 // ═══════════════════════════════════════════════════════════════════════════════
 
 class _MovieCard extends StatelessWidget {
   final Movie movie;
   const _MovieCard({required this.movie});
+
+  // Generate a consistent color from movie id
+  Color get _posterColor {
+    final colors = [
+      const Color(0xFF1A237E), // Deep blue
+      const Color(0xFF4A148C), // Deep purple
+      const Color(0xFFB71C1C), // Deep red
+      const Color(0xFF0D47A1), // Blue
+      const Color(0xFF004D40), // Teal
+      const Color(0xFFE65100), // Orange
+      const Color(0xFF33691E), // Green
+      const Color(0xFF880E4F), // Pink
+    ];
+    return colors[movie.id % colors.length];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -343,7 +334,7 @@ class _MovieCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Poster thumbnail
+            // Poster thumbnail - SAFE colored placeholder
             Expanded(
               child: Stack(
                 children: [
@@ -351,15 +342,37 @@ class _MovieCard extends StatelessWidget {
                     width: double.infinity,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      image: DecorationImage(
-                        image: CachedNetworkImageProvider(movie.posterUrl),
-                        fit: BoxFit.cover,
-                      ),
+                      color: _posterColor,
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.movie,
+                          color: Colors.white54,
+                          size: 32,
+                        ),
+                        const SizedBox(height: 4),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          child: Text(
+                            movie.title,
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -369,11 +382,9 @@ class _MovieCard extends StatelessWidget {
                     top: 6,
                     left: 6,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 5, vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                       decoration: BoxDecoration(
-                        color: AppColors.scaffoldBackground
-                            .withOpacity(0.8),
+                        color: AppColors.scaffoldBackground.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -391,21 +402,15 @@ class _MovieCard extends StatelessWidget {
                     top: 6,
                     right: 6,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 5, vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                       decoration: BoxDecoration(
-                        color: AppColors.scaffoldBackground
-                            .withOpacity(0.8),
+                        color: AppColors.scaffoldBackground.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(
-                            Icons.star,
-                            color: AppColors.primary,
-                            size: 10,
-                          ),
+                          const Icon(Icons.star, color: AppColors.primary, size: 10),
                           const SizedBox(width: 2),
                           Text(
                             movie.formattedRating,
