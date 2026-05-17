@@ -1,0 +1,66 @@
+name: Build & Release APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kumastream-release
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: v1.3.0-${{ github.run_number }}
+          name: Kumastream v1.3.0 Build #${{ github.run_number }}
+          files: build/app/outputs/flutter-apk/app-release.apk
+          body: |
+            Kumastream Movie Streaming App v1.3.0
+
+            ## What's New
+            - Complete app redesign with Navigation Drawer menu
+            - Movies & Series tabs with 3-column grid
+            - Bookmark, Recent, Downloads, Genres pages
+            - Account page with Premium status
+            - Admin Panel & TMDB Generator (admin only)
+            - Login/Register with admin support
+
+            ## Download
+            Download the APK file below and install on your Android device.
+
+            ## Installation
+            1. Download `app-release.apk`
+            2. Enable "Install from unknown sources" in your phone settings
+            3. Open the downloaded APK and install
