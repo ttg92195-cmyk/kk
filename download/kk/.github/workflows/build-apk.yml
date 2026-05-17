@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -25,7 +27,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.41.9'
+          flutter-version: '3.24.0'
           channel: 'stable'
 
       - name: Install dependencies
@@ -40,21 +42,27 @@ jobs:
           name: kumastream-release
           path: build/app/outputs/flutter-apk/app-release.apk
 
+      - name: Create Tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -f v1.0.0-${{ github.run_number }}
+          git push origin v1.0.0-${{ github.run_number }} --force
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
-        if: github.ref == 'refs/heads/main'
         with:
           tag_name: v1.0.0-${{ github.run_number }}
-          name: Kumastream v1.0.0 Build #${{ github.run_number }}
+          name: "Kumastream v1.0.0 Build #${{ github.run_number }}"
           files: build/app/outputs/flutter-apk/app-release.apk
           body: |
-            🎬 Kumastream Movie Streaming App
+            Kumastream Movie Streaming App
 
             ## Download
             Download the APK file below and install on your Android device.
 
             ## Installation
-            1. Download `app-release.apk`
+            1. Download app-release.apk
             2. Enable "Install from unknown sources" in your phone settings
             3. Open the downloaded APK and install
 
@@ -65,3 +73,5 @@ jobs:
             - Search functionality
             - Profile & Settings
             - Authentication (Sign In / Sign Up)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
