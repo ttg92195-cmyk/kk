@@ -11,30 +11,19 @@ import 'screens/auth/signup_screen.dart';
 import 'providers/app_provider.dart';
 
 void main() {
+  // Ensure Flutter binding is initialized first
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Catch all Flutter framework errors
+  // Catch errors in Flutter framework
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.presentError(details);
-    debugPrint('=== Flutter Error ===');
-    debugPrint(details.exceptionAsString());
-    debugPrint(details.stack.toString());
   };
 
   // Catch all async errors
   runZonedGuarded< void>(() {
-    runApp(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => AppProvider()),
-        ],
-        child: const KumastreamApp(),
-      ),
-    );
+    runApp(const KumastreamApp());
   }, (error, stackTrace) {
-    debugPrint('=== Async Error ===');
-    debugPrint(error.toString());
-    debugPrint(stackTrace.toString());
+    debugPrint('Unhandled error: $error');
   });
 }
 
@@ -43,50 +32,24 @@ class KumastreamApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Kumastream',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
-      builder: (context, widget) {
-        // Wrap entire app in error boundary
-        ErrorWidget.builder = (FlutterErrorDetails details) {
-          return Material(
-            color: AppColors.scaffoldBackground,
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.error_outline, color: AppColors.primary, size: 48),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Something went wrong',
-                    style: TextStyle(color: AppColors.textPrimary, fontSize: 18),
-                  ),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: Text(
-                      details.exceptionAsString(),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        };
-        return widget ?? const SizedBox.shrink();
-      },
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const SplashScreen(),
-        '/home': (context) => const MainNavigation(),
-        '/signin': (context) => const SignInScreen(),
-        '/signup': (context) => const SignUpScreen(),
-        '/movie-detail': (context) => const MovieDetailScreen(),
-        '/settings': (context) => const SettingsScreen(),
-      },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppProvider()),
+      ],
+      child: MaterialApp(
+        title: 'Kumastream',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.darkTheme,
+        initialRoute: '/',
+        routes: {
+          '/': (context) => const SplashScreen(),
+          '/home': (context) => const MainNavigation(),
+          '/signin': (context) => const SignInScreen(),
+          '/signup': (context) => const SignUpScreen(),
+          '/movie-detail': (context) => const MovieDetailScreen(),
+          '/settings': (context) => const SettingsScreen(),
+        },
+      ),
     );
   }
 }
