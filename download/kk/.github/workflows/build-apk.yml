@@ -1,0 +1,67 @@
+name: Build & Release APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.9'
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kumastream-release
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: v1.0.0-${{ github.run_number }}
+          name: Kumastream v1.0.0 Build #${{ github.run_number }}
+          files: build/app/outputs/flutter-apk/app-release.apk
+          body: |
+            🎬 Kumastream Movie Streaming App
+
+            ## Download
+            Download the APK file below and install on your Android device.
+
+            ## Installation
+            1. Download `app-release.apk`
+            2. Enable "Install from unknown sources" in your phone settings
+            3. Open the downloaded APK and install
+
+            ## Features
+            - Dark mode with yellow accent theme
+            - Movie categories (Iconic, War, Trending, Series, Anime, Action, Horror)
+            - Live streaming page
+            - Search functionality
+            - Profile & Settings
+            - Authentication (Sign In / Sign Up)
