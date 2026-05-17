@@ -51,7 +51,7 @@ class AdminPanelScreen extends StatelessWidget {
             () {},
           ),
           _buildAdminCard(
-            Icons.server,
+            Icons.dns,
             'Server Status',
             'Monitor server health',
             () {},
