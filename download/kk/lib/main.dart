@@ -10,6 +10,15 @@ import 'screens/auth/signup_screen.dart';
 import 'providers/app_provider.dart';
 
 void main() {
+  // Ensure Flutter bindings are initialized
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Catch errors to prevent app crash
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    debugPrint('Flutter Error: ${details.exceptionAsString()}');
+  };
+
   runApp(
     MultiProvider(
       providers: [

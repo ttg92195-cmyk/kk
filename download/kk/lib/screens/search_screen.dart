@@ -124,7 +124,7 @@ class _SearchScreenState extends State<SearchScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 64, color: AppColors.textSecondary.withValues(alpha: 0.4)),
+          Icon(icon, size: 64, color: AppColors.textSecondary.withOpacity(0.4)),
           const SizedBox(height: 12),
           Text(
             text,
@@ -185,7 +185,7 @@ class _SearchMovieCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: AppColors.scaffoldBackground.withValues(alpha: 0.8),
+                        color: AppColors.scaffoldBackground.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -206,7 +206,7 @@ class _SearchMovieCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: AppColors.scaffoldBackground.withValues(alpha: 0.8),
+                        color: AppColors.scaffoldBackground.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Row(

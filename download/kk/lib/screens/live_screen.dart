@@ -221,7 +221,7 @@ class _HighlightCard extends StatelessWidget {
           image: CachedNetworkImageProvider(event.thumbnailUrl),
           fit: BoxFit.cover,
           colorFilter: ColorFilter.mode(
-            Colors.black.withValues(alpha: 0.3),
+            Colors.black.withOpacity(0.3),
             BlendMode.darken,
           ),
         ),
@@ -234,7 +234,7 @@ class _HighlightCard extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.9),
+                color: AppColors.primary.withOpacity(0.9),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -332,7 +332,7 @@ class _ChannelCard extends StatelessWidget {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.15),
+              color: AppColors.primary.withOpacity(0.15),
               shape: BoxShape.circle,
             ),
             child: const Icon(

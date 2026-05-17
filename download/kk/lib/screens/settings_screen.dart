@@ -27,7 +27,7 @@ class SettingsScreen extends StatelessWidget {
             trailing: Switch(
               value: provider.notificationEnabled,
               onChanged: (_) => provider.toggleNotification(),
-              activeTrackColor: AppColors.primary.withValues(alpha: 0.5),
+              activeTrackColor: AppColors.primary.withOpacity(0.5),
               activeThumbColor: AppColors.primary,
             ),
           ),
@@ -41,7 +41,7 @@ class SettingsScreen extends StatelessWidget {
             trailing: Switch(
               value: provider.adultContentEnabled,
               onChanged: (_) => provider.toggleAdult(),
-              activeTrackColor: AppColors.primary.withValues(alpha: 0.5),
+              activeTrackColor: AppColors.primary.withOpacity(0.5),
               activeThumbColor: AppColors.primary,
             ),
           ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
 import '../config/theme.dart';
 import 'home_screen.dart';
 import 'live_screen.dart';
@@ -48,23 +47,23 @@ class _MainNavigationState extends State<MainNavigation> {
         unselectedLabelStyle: const TextStyle(fontSize: 11),
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Iconsax.home_2),
-            activeIcon: Icon(Iconsax.home_25),
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Iconsax.play_circle),
-            activeIcon: Icon(Iconsax.play_circle5),
+            icon: Icon(Icons.play_circle_outline),
+            activeIcon: Icon(Icons.play_circle_filled),
             label: 'Live',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Iconsax.search_normal_1),
-            activeIcon: Icon(Iconsax.search_normal),
+            icon: Icon(Icons.search),
+            activeIcon: Icon(Icons.search),
             label: 'Search',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Iconsax.user),
-            activeIcon: Icon(Iconsax.user5),
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
             label: 'Profile',
           ),
         ],
@@ -75,7 +74,7 @@ class _MainNavigationState extends State<MainNavigation> {
   Widget _buildDrawer() {
     return NavigationDrawer(
       backgroundColor: AppColors.cardColor,
-      indicatorColor: AppColors.primary.withValues(alpha: 0.15),
+      indicatorColor: AppColors.primary.withOpacity(0.15),
       selectedIndex: null,
       onDestinationSelected: (index) {
         Navigator.pop(context); // close drawer
@@ -116,13 +115,13 @@ class _MainNavigationState extends State<MainNavigation> {
           ),
         ),
         NavigationDrawerDestination(
-          icon: Icon(Iconsax.setting_2, color: AppColors.textSecondary),
-          selectedIcon: Icon(Iconsax.setting_24, color: AppColors.primary),
+          icon: Icon(Icons.settings_outlined, color: AppColors.textSecondary),
+          selectedIcon: Icon(Icons.settings, color: AppColors.primary),
           label: Text('Settings'),
         ),
         NavigationDrawerDestination(
-          icon: Icon(Iconsax.logout, color: AppColors.textSecondary),
-          selectedIcon: Icon(Iconsax.logout, color: AppColors.primary),
+          icon: Icon(Icons.logout, color: AppColors.textSecondary),
+          selectedIcon: Icon(Icons.logout, color: AppColors.primary),
           label: Text('Sign In'),
         ),
       ],
